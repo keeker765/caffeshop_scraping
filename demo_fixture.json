@@ -1,0 +1,53 @@
+[
+  {
+    "business": {
+      "place_id": "demo_nyc_espresso",
+      "business_name": "Demo Espresso NYC",
+      "location": "New York, New York, USA",
+      "full_address": "123 Demo St, New York, NY 10001",
+      "phone": "+1 212-555-0101",
+      "additional_phones": [
+        "+1 212-555-0105"
+      ],
+      "google_maps_url": "https://maps.google.com/?cid=demo-nyc",
+      "website_url": "https://demo-espresso-nyc.example.com/contact",
+      "opening_hours": "Mon-Fri 7:00-18:00",
+      "google_knowledge_url": null,
+      "social_medias_raw": [],
+      "facebook_url": null,
+      "instagram_handle": null,
+      "twitter_url": null,
+      "yelp_url": null
+    },
+    "source_url": "https://demo-espresso-nyc.example.com/contact",
+    "scrape_notes": "demo_fixture_contact_page",
+    "html": "<html><body><h1>Contact Demo Espresso NYC</h1><p>Email us at <a href=\"mailto:info@demoespresso.com\">info@demoespresso.com</a>.</p><p>Wholesale inquiries: Sarah \u2013 sarah@demoespresso.com</p><p>Follow us on <a href=\"https://www.instagram.com/demoespresso\">Instagram</a> and <a href=\"https://www.facebook.com/demoespresso\">Facebook</a>.</p></body></html>",
+    "email_owner_overrides": {
+      "sarah@demoespresso.com": "Sarah Kim"
+    }
+  },
+  {
+    "business": {
+      "place_id": "demo_toronto_roasters",
+      "business_name": "Harbor Light Roasters",
+      "location": "Toronto, Ontario, Canada",
+      "full_address": "456 Harbor Ave, Toronto, ON M5J 2N8",
+      "phone": "+1 416-555-0199",
+      "additional_phones": [],
+      "google_maps_url": "https://maps.google.com/?cid=demo-toronto",
+      "website_url": "https://harborlightroasters.example.ca/connect",
+      "opening_hours": "Daily 8:00-17:00",
+      "google_knowledge_url": null,
+      "social_medias_raw": [],
+      "facebook_url": null,
+      "instagram_handle": null,
+      "twitter_url": null,
+      "yelp_url": null
+    },
+    "source_url": "https://harborlightroasters.example.ca/connect",
+    "html": "<html><body><h2>Connect with Harbor Light Roasters</h2><p>General: <a href=\"mailto:hello@harborlightroasters.ca\">hello@harborlightroasters.ca</a></p><p>Owner: Mia Harbour - <a href=\"mailto:mia@harborlightroasters.ca\">mia@harborlightroasters.ca</a></p><p>Find us on <a href=\"https://twitter.com/harborlightcoffee\">Twitter</a>, <a href=\"https://www.yelp.com/biz/harbor-light-roasters\">Yelp</a></p></body></html>",
+    "email_owner_overrides": {
+      "mia@harborlightroasters.ca": "Mia Harbour"
+    }
+  }
+]

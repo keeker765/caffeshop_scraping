@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import csv
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional
+from typing import Any, Dict, Iterable, Iterator, List, Optional
 
 from .config import CityTarget, ProjectSettings
 from .extractors import PageExtraction, parse_contact_page
@@ -86,7 +87,12 @@ def enrich_with_socials(business: Business, extraction: PageExtraction) -> None:
         business.yelp_url = extraction.social_links["yelp_url"][0]
 
 
-def expand_email_records(business: Business, extraction: PageExtraction, source_url: str) -> List[EmailRecord]:
+def expand_email_records(
+    business: Business,
+    extraction: PageExtraction,
+    source_url: str,
+    scrape_notes: str = "website",
+) -> List[EmailRecord]:
     """Generate EmailRecord entries for a business given extracted emails."""
     records: List[EmailRecord] = []
     for email in extraction.emails:
@@ -95,7 +101,7 @@ def expand_email_records(business: Business, extraction: PageExtraction, source_
             email=email,
             email_owner_name=extraction.email_to_name.get(email),
             source_url=source_url,
-            scrape_notes="website",
+            scrape_notes=scrape_notes,
             discovered_at=datetime.utcnow(),
         )
         records.append(record)
@@ -153,6 +159,11 @@ def write_email_records(records: Iterable[EmailRecord], output_csv: Path) -> Non
 
 def run_pipeline(settings: ProjectSettings, output_csv: Path) -> None:
     """Top level orchestration helper."""
+    if settings.is_demo:
+        run_demo_pipeline(settings, output_csv)
+        return
+    if not settings.google_api_key:
+        raise ValueError("google_api_key is required when not running in demo mode")
     client = GoogleMapsClient(api_key=settings.google_api_key, request_delay_seconds=settings.request_delay_seconds)
     fetcher = WebFetcher()
     all_records: List[EmailRecord] = []
@@ -161,4 +172,51 @@ def run_pipeline(settings: ProjectSettings, output_csv: Path) -> None:
         city_records = process_city(client, fetcher, city, settings.max_results_per_city)
         LOGGER.info("%s produced %s email rows", city.display_name, len(city_records))
         all_records.extend(city_records)
+    write_email_records(all_records, output_csv)
+
+
+def _build_business_from_fixture(data: Dict[str, Any]) -> Business:
+    """Create a Business instance from fixture data."""
+    business_kwargs = dict(data)
+    business_kwargs.setdefault("additional_phones", [])
+    business_kwargs.setdefault("social_medias_raw", [])
+    business_kwargs.setdefault("source_payload", data)
+    return Business(**business_kwargs)
+
+
+def load_demo_fixture(path: Path) -> List[Dict[str, Any]]:
+    """Load a demo fixture JSON file."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        raise ValueError("Demo fixture must contain a list of entries")
+    return payload
+
+
+def run_demo_pipeline(settings: ProjectSettings, output_csv: Path) -> None:
+    """Generate email records using an offline demo fixture."""
+    assert settings.demo_fixture_path is not None, "Demo mode requires a fixture path"
+    fixture_entries = load_demo_fixture(settings.demo_fixture_path)
+    all_records: List[EmailRecord] = []
+    for entry in fixture_entries:
+        business_data = entry.get("business") or {}
+        if not business_data:
+            LOGGER.warning("Skipping fixture entry without business data: %s", entry)
+            continue
+        business = _build_business_from_fixture(business_data)
+        html = entry.get("html")
+        if not isinstance(html, str):
+            LOGGER.warning("Skipping fixture entry without HTML content for %s", business.business_name)
+            continue
+        extraction = parse_contact_page(html)
+        enrich_with_socials(business, extraction)
+        overrides = entry.get("email_owner_overrides") or {}
+        for email, owner in overrides.items():
+            if owner:
+                normalized = email.strip().lower()
+                if normalized in extraction.email_to_name:
+                    extraction.email_to_name[normalized] = owner
+        source_url = entry.get("source_url") or business.website_url or "demo"
+        notes = entry.get("scrape_notes") or "demo_fixture"
+        records = expand_email_records(business, extraction, source_url, scrape_notes=notes)
+        all_records.extend(records)
     write_email_records(all_records, output_csv)

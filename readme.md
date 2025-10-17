@@ -40,6 +40,7 @@ This repository contains a reproducible workflow for collecting high-quality con
 
    - Copy `config.sample.yaml` to `config.yaml`.
    - Replace `YOUR_GOOGLE_API_KEY` with a valid Google Maps Places API key.
+   - Alternatively, set `demo_fixture_path` to point at a local fixture (e.g. `demo_fixture.json`) for an offline dry run.
    - Adjust `request_delay_seconds` if you encounter captcha challenges. Start at 1.5–2 seconds.
    - Update the `cities` list if you need to target different locations.
 
@@ -55,6 +56,17 @@ This repository contains a reproducible workflow for collecting high-quality con
    - Fetch each business website sequentially with retry/backoff.
    - Parse contact information, social media links, and emails.
    - Export a CSV file with one row per email address.
+
+### Run the offline demo (no API key required)
+
+If you only need to verify the tooling end-to-end without a Google Maps API key, use the bundled demo fixture:
+
+```bash
+python -m src.main config.demo.yaml --output output/demo_fixture.csv
+```
+
+This command loads `demo_fixture.json`, parses the embedded HTML snippets for two sample coffee shops (New York and Toronto),
+and writes a CSV file with four email rows demonstrating the expected schema.
 
 4. **Quality assurance**
 

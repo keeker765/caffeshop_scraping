@@ -1,3 +1,5 @@
+# Provide a Google API key for live scraping or replace this field with
+# `demo_fixture_path: path/to/demo_fixture.json` to run the offline demo.
 google_api_key: "YOUR_GOOGLE_API_KEY"
 request_delay_seconds: 1.5
 max_results_per_city: 120

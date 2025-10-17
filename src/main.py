@@ -5,8 +5,8 @@ import argparse
 import logging
 from pathlib import Path
 
-from caffeshop_scraping.config import ProjectSettings
-from caffeshop_scraping.pipeline import run_pipeline
+from .caffeshop_scraping.config import ProjectSettings
+from .caffeshop_scraping.pipeline import run_pipeline
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
 
