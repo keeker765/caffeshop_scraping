@@ -1,0 +1,11 @@
+# Demo configuration that uses a local fixture instead of Google Maps API calls.
+demo_fixture_path: demo_fixture.json
+request_delay_seconds: 1.5
+max_results_per_city: 25
+cities:
+  - name: New York
+    region: New York
+    country: USA
+  - name: Toronto
+    region: Ontario
+    country: Canada
